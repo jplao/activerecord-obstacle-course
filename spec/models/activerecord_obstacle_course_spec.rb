@@ -70,7 +70,7 @@ describe 'ActiveRecord Obstacle Course' do
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    order_id = Order.order('amount desc').limit(1)first.id
+    order_id = Order.order('amount desc').limit(1).first.id
     # ------------------------------------------------------------
 
     # Expectation
@@ -215,11 +215,11 @@ describe 'ActiveRecord Obstacle Course' do
     expected_result = [item_1, item_2, item_7, item_8, item_9, item_10]
 
     # ----------------------- Using Ruby -------------------------
-    items = Item.all.map { |item| item unless items_not_included.include?(item) }.compact
+    #items = Item.all.map { |item| item unless items_not_included.include?(item) }.compact
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    #items = Item.where(items_not_included)
+    items = Item.where.not(id: [3, 4, 5])
     # ------------------------------------------------------------
 
     # Expectation
@@ -302,20 +302,20 @@ describe 'ActiveRecord Obstacle Course' do
     expected_result = [user_3.name, user_2.name]
 
     # ----------------------- Using Raw SQL-----------------------
-    users = ActiveRecord::Base.connection.execute("
-      select
-        distinct users.name
-      from users
-        join orders on orders.user_id=users.id
-        join order_items ON order_items.order_id=orders.id
-      where order_items.item_id=#{item_8.id}
-      ORDER BY users.name")
-    users = users.map {|u| u['name']}
+    #users = ActiveRecord::Base.connection.execute("
+    #  select
+    #    distinct users.name
+    #  from users
+    #    join orders on orders.user_id=users.id
+    #    join order_items ON order_items.order_id=orders.id
+    #  where order_items.item_id=#{item_8.id}
+    #  ORDER BY users.name")
+    #users = users.map {|u| u['name']}
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-
-    #users = User.select('orders.*','items.*','users.*').joins(:orders, :items).where('order_items.item_id = order_items.item_8.id')
+    ids = Item.find(item_8.id).orders.pluck(:user_id).uniq
+    users = User.where(id: ids).order(:name).pluck(:name)
     # ------------------------------------------------------------
 
     # Expectation
@@ -354,7 +354,8 @@ describe 'ActiveRecord Obstacle Course' do
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    #items_for_user_3_third_order = Order.where('user_id = 3').items.pluck(:name)
+
+    items_for_user_3_third_order = Item.joins(:orders).where('orders.user_id = 3').pluck(:name)
     # ------------------------------------------------------------
 
     # Expectation
@@ -434,7 +435,7 @@ describe 'ActiveRecord Obstacle Course' do
     # -----------------------------------------------------------
 
     # ------------------ Improved Solution ----------------------
-    #  Solution goes here
+    #orders = Order.joins(:items)
     # -----------------------------------------------------------
 
     # Expectation
