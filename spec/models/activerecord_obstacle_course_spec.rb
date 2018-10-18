@@ -57,7 +57,7 @@ describe 'ActiveRecord Obstacle Course' do
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    order_id = Order.order(:amount).first.id
+    order_id = Order.order(:amount).limit(1).first.id
     # ------------------------------------------------------------
 
     # Expectation
@@ -70,7 +70,7 @@ describe 'ActiveRecord Obstacle Course' do
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    order_id = Order.order('amount desc').first.id
+    order_id = Order.order('amount desc').limit(1)first.id
     # ------------------------------------------------------------
 
     # Expectation
@@ -210,16 +210,16 @@ describe 'ActiveRecord Obstacle Course' do
     expect(orders).to eq(expected_result)
   end
 
-  xit '12. should return all items except items: 3, 4 & 5' do
+  it '12. should return all items except items: 3, 4 & 5' do
     items_not_included = [item_3, item_4, item_5]
     expected_result = [item_1, item_2, item_7, item_8, item_9, item_10]
 
     # ----------------------- Using Ruby -------------------------
-    #items = Item.all.map { |item| item unless items_not_included.include?(item) }.compact
+    items = Item.all.map { |item| item unless items_not_included.include?(item) }.compact
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
-    #items = Item.where.not('item, items_not_included')
+    #items = Item.where(items_not_included)
     # ------------------------------------------------------------
 
     # Expectation
@@ -314,6 +314,7 @@ describe 'ActiveRecord Obstacle Course' do
     # ------------------------------------------------------------
 
     # ------------------ Using ActiveRecord ----------------------
+
     #users = User.select('orders.*','items.*','users.*').joins(:orders, :items).where('order_items.item_id = order_items.item_8.id')
     # ------------------------------------------------------------
 
