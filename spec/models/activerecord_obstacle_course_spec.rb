@@ -620,7 +620,7 @@ describe 'ActiveRecord Obstacle Course' do
     expect(data[12].item_count).to eq(4)
   end
 
-  xit '30. returns the names of items that have been ordered without n+1 queries' do
+  it '30. returns the names of items that have been ordered without n+1 queries' do
     # What is an n+1 query?
     # This video is older, but the concepts explained are still relevant:
     # http://railscasts.com/episodes/372-bullet
@@ -631,7 +631,7 @@ describe 'ActiveRecord Obstacle Course' do
     Bullet.start_request
 
     # ------------------------------------------------------
-    orders = Order.all.items.pluck(:name) # Edit only this line
+    orders = Order.all.includes(:order_items).includes(:items) # Edit only this line
     # ------------------------------------------------------
 
     # Do not edit below this line
